@@ -10,8 +10,78 @@ datasource db {
     relationMode = "prisma"
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+// Personalization
+model Personalization {
+    accountId   String  @unique
+    badge       String?
+    anilistUser Int?
+    bio         String? @db.VarChar(150)
+
+    @@map("personalizations")
+}
+
+// Manga
+model Manga {
+    title           String
+    thumbnail       String
+    id              Int               @id
+    isAdult         Boolean           @default(false)
+    CollectionManga CollectionManga[]
+
+    @@map("manga")
+}
+
+// Collection
+model Collection {
+    id          Int     @id @default(autoincrement())
+    title       String
+    description String? @db.VarChar(240)
+    authorId    String
+
+    dateCreated     DateTime          @default(now())
+    adultContent    Boolean           @default(false)
+    lastUpdated     DateTime?
+    tags            Json?
+    CollectionManga CollectionManga[]
+    Bookmark        Bookmark[]
+    Favorite        Favorite[]
+
+    @@index([authorId])
+    @@map("collections")
+}
+
+model CollectionManga {
+    mangaId      Int
+    collectionId Int
+    manga        Manga      @relation(fields: [mangaId], references: [id])
+    collection   Collection @relation(fields: [collectionId], references: [id])
+
+    @@unique([mangaId, collectionId])
+    @@index([collectionId])
+    @@index([mangaId])
+    @@map("collection_manga")
+}
+
+// Bookmark
+model Bookmark {
+    id           Int        @id @default(autoincrement())
+    collection   Collection @relation(fields: [collectionId], references: [id])
+    accountId    String
+    collectionId Int
+
+    @@index([accountId])
+    @@index([collectionId])
+    @@map("bookmarks")
+}
+
+// Favorite
+model Favorite {
+    timestamp    DateTime   @default(now())
+    accountId    Int
+    collection   Collection @relation(fields: [collectionId], references: [id])
+    collectionId Int
+
+    @@unique([accountId, collectionId])
+    @@index([collectionId])
+    @@map("favorites")
 }
