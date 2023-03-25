@@ -9,14 +9,6 @@ import { GetCollectionsSchema } from "../schemas";
 import { getCollections } from "../functions";
 
 export const collectionsRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
-
   /**
    * Get Collections
    */
