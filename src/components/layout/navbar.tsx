@@ -1,6 +1,7 @@
-import { SignedIn, UserButton, SignedOut, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import AuthButton from "../AuthButton";
+import CreateCollectionButton from "../CreateCollectionButton";
 export default function NavBar() {
   const { pathname } = useRouter();
   const hideAuthButton = !!["/sign-in*", "/sign-up*", "/profile*"].find((x) =>
@@ -16,16 +17,10 @@ export default function NavBar() {
             </h1>
           </div>
         </Link>
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
+          <CreateCollectionButton />
           <div hidden={hideAuthButton}>
-            <SignedIn>
-              {/* Mount the UserButton component */}
-              <UserButton />
-            </SignedIn>
-            <SignedOut>
-              {/* Signed out users get sign in button */}
-              <SignInButton />
-            </SignedOut>
+            <AuthButton />
           </div>
         </div>
       </div>
