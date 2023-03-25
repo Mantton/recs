@@ -1,10 +1,11 @@
 import { type Prisma, type PrismaClient } from "@prisma/client";
 import type { z } from "zod";
 import { GetCollectionSort } from "../schemas";
-import type { GetAllSchema } from "../schemas";
-import { getUsers } from "./clerk";
+import type { GetCollectionsSchema } from "../schemas";
+import { getUser, getUsers } from "./clerk";
 import { serializeCollection } from "../utils/serializers";
-type GetAllCollectionsParams = z.infer<typeof GetAllSchema> & {
+import { TRPCError } from "@trpc/server";
+type GetCollectionsParams = z.infer<typeof GetCollectionsSchema> & {
   userId?: string;
 };
 
@@ -12,10 +13,24 @@ type GetAllCollectionsParams = z.infer<typeof GetAllSchema> & {
  * Method gets collections from prisma
  * @returns Collection Array
  */
-export const getAllCollections = async (
-  query: GetAllCollectionsParams,
+export const getCollections = async (
+  query: GetCollectionsParams,
   prisma: PrismaClient
 ) => {
+  /**
+   * Account Collections Guard
+   * If Querying for Collections from Account, Ensure the Account Exists
+   */
+  if (query.authorId) {
+    const user = await getUser(query.authorId);
+
+    if (!user)
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "ACCOUNT_NOT_FOUND",
+      });
+  }
+
   //
   const accountId = query.userId;
   const TAKE = 30;
@@ -54,12 +69,38 @@ export const getAllCollections = async (
       break;
   }
 
+  const whereClause = query.authorId || query.mangaId || query.tagId;
   // Query prisma for collections
   const collections = await prisma.collection.findMany({
     skip: SKIP,
     take: TAKE,
     orderBy: [order, { dateCreated: "asc" }],
 
+    /**
+     * Query for collections by author, by manga or by tag
+     */
+    ...(whereClause && {
+      where: {
+        // Author
+        ...(query.authorId && {
+          authorId: query.authorId,
+        }),
+        // Manga
+        ...(query.mangaId && {
+          manga: {
+            some: {
+              mangaId: query.mangaId,
+            },
+          },
+        }),
+        // Tags
+        ...(query.tagId && {
+          tags: {
+            array_contains: query.tagId,
+          },
+        }),
+      },
+    }),
     // Include the Favorite & Bookmarks Count
     include: {
       _count: {
@@ -105,7 +146,11 @@ export const getAllCollections = async (
   const authors = await getUsers(collections.map((v) => v.authorId));
   const getAuthor = (id: string) => {
     const author = authors.find((v) => v.id === id);
-    if (!author) throw new Error("AUTHOR_NOT_FOUND");
+    if (!author)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "AUTHOR_NOT_FOUND",
+      });
     return author;
   };
 

@@ -5,8 +5,8 @@ import {
   privateProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { GetAllSchema } from "../schemas";
-import { getAllCollections } from "../functions";
+import { GetCollectionsSchema } from "../schemas";
+import { getCollections } from "../functions";
 
 export const collectionsRouter = createTRPCRouter({
   hello: publicProcedure
@@ -18,19 +18,14 @@ export const collectionsRouter = createTRPCRouter({
     }),
 
   /**
-   * Get All Collections
+   * Get Collections
    */
-  getAll: publicProcedure.input(GetAllSchema).query(({ ctx, input }) => {
-    const userId = ctx.currentUser?.id;
-    return getAllCollections({ ...input, userId }, ctx.prisma);
-  }),
-
-  /**
-   * Get All Collections From Account
-   */
-  getForAccount: publicProcedure.query(async () => {
-    //
-  }),
+  getCollections: publicProcedure
+    .input(GetCollectionsSchema)
+    .query(({ ctx, input }) => {
+      const userId = ctx.currentUser?.id;
+      return getCollections({ ...input, userId }, ctx.prisma);
+    }),
 
   /**
    * Get Single Collection Information

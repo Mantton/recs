@@ -19,3 +19,21 @@ export const getUsers = async (ids: string[]): Promise<SerializedAuthor[]> => {
     };
   });
 };
+
+/**
+ *  Gets a single user from clerk
+ * @param id The ID of the User being queried for
+ * @returns the serialized user
+ */
+export const getUser = async (id: string): Promise<SerializedAuthor | null> => {
+  try {
+    const user = await clerkClient.users.getUser(id);
+    return {
+      id: user.id,
+      username: user.username ?? "",
+      profileImage: user.profileImageUrl,
+    };
+  } catch {
+    return null;
+  }
+};
