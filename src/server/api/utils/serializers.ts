@@ -1,5 +1,5 @@
 import { omit } from "lodash";
-import type { PopulatedCollection, SerializedAuthor } from "../../types";
+import type { PopulatedCollection, SerializedAuthor } from "../types";
 
 /**
  * Serializes the returned prisma object to a more dx friendly object

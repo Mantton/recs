@@ -5,11 +5,21 @@ export default function AuthButton() {
     <>
       <SignedIn>
         {/* Mount the UserButton component */}
-        <UserButton />
+        <UserButton
+          userProfileMode="navigation"
+          userProfileUrl="/profile"
+          appearance={{
+            variables: {
+              colorPrimary: "#64748b",
+            },
+          }}
+        />
       </SignedIn>
       <SignedOut>
         {/* Signed out users get sign in button */}
-        <SignInButton />
+        <div className="rounded-md bg-slate-300 px-2 py-1 text-slate-700 transition-colors duration-300 hover:bg-slate-400">
+          <SignInButton />
+        </div>
       </SignedOut>
     </>
   );

@@ -17,7 +17,7 @@ export default function NavBar() {
             </h1>
           </div>
         </Link>
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-4 md:flex">
           <CreateCollectionButton />
           <div hidden={hideAuthButton}>
             <AuthButton />

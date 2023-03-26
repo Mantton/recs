@@ -5,8 +5,8 @@ import {
   privateProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { GetCollectionsSchema } from "../schemas";
-import { getCollections } from "../functions";
+import { CreateCollectionSchema, GetCollectionsSchema } from "../schemas";
+import { createCollection, getCollections } from "../functions";
 
 export const collectionsRouter = createTRPCRouter({
   /**
@@ -29,9 +29,12 @@ export const collectionsRouter = createTRPCRouter({
   /**
    * Creates a new Collection
    */
-  createCollection: privateProcedure.mutation(async ({ ctx }) => {
-    //
-  }),
+  createCollection: privateProcedure
+    .input(CreateCollectionSchema)
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.currentUser.id;
+      return createCollection({ ...input, userId }, ctx.prisma);
+    }),
 
   /**
    * Edits A Collections Basic Information like title or bio

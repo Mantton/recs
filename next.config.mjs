@@ -18,5 +18,15 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        port: "",
+        pathname: "**",
+        hostname: "s4.anilist.co",
+      },
+    ],
+  },
 };
 export default config;
