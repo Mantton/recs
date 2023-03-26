@@ -1,8 +1,31 @@
 import { type AnilistMedia } from "@/types";
 import { searchAnilist } from "@/utils/anilist";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, createContext } from "react";
 import { LoadingSpinner } from "./loading";
+import { AiOutlinePlusCircle, AiOutlineCloseCircle } from "react-icons/ai";
 import Image from "next/image";
+
+/**
+ * Selection Context
+ * There might be an easier way of doing this lol
+ */
+type SelectionContextProp = {
+  insertMedia: (m: AnilistMedia) => void;
+  removeMedia: (m: AnilistMedia) => void;
+};
+const SelectionContext = createContext<SelectionContextProp>({
+  insertMedia: () => {
+    //
+  },
+  removeMedia: () => {
+    //
+  },
+});
+const useSelectionContext = () => useContext(SelectionContext);
+
+/**
+ * Search Icon Component
+ */
 const SearchIcon = () => {
   return (
     <div className="grid h-full w-12 place-items-center text-gray-300">
@@ -24,29 +47,60 @@ const SearchIcon = () => {
   );
 };
 
-const MediaList = ({ media }: { media: AnilistMedia[] }) => {
+/**
+ * Media List component
+ */
+const MediaList = ({
+  media,
+  addition,
+}: {
+  media: AnilistMedia[];
+  addition: boolean;
+}) => {
   return (
     <>
-      <div className=" grid h-64 grid-flow-col grid-rows-1 gap-2 overflow-x-scroll px-4">
+      <div className="flex h-64 grid-flow-col-dense grid-rows-1	 gap-2 overflow-x-auto px-4">
         {media.map((v) => (
-          <MediaTile {...v} key={v.id} />
+          <MediaTile media={v} addition={addition} key={v.id} />
         ))}
       </div>
     </>
   );
 };
-const MediaTile = (media: AnilistMedia) => {
+
+/**
+ * media tile component
+ */
+const MediaTile = ({
+  media,
+  addition,
+}: {
+  media: AnilistMedia;
+  addition: boolean;
+}) => {
   const title = media.title.english ?? media.title.userPreferred;
+  const { insertMedia, removeMedia } = useSelectionContext();
+  const buttonClassName =
+    "h-1/4 w-full text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100";
   return (
     <>
-      <div className="my-4 flex flex-col gap-2">
-        <div className="aspect-w-2 aspect-h-3 relative w-28 rounded-md bg-indigo-400  ">
+      <div className="my-4 w-28 flex-shrink-0">
+        <div className="group aspect-w-2 aspect-h-3 rounded-md ">
           <Image
             src={media.coverImage.large}
             className="h-full w-full rounded-md object-cover"
             alt={title}
             fill
           />
+
+          <button
+            type="button"
+            className="rounded-md bg-opacity-0 transition-all duration-500 group-hover:bg-slate-700 group-hover:bg-opacity-30"
+            onClick={() => (addition ? insertMedia(media) : removeMedia(media))}
+          >
+            {addition && <AiOutlinePlusCircle className={buttonClassName} />}
+            {!addition && <AiOutlineCloseCircle className={buttonClassName} />}
+          </button>
         </div>
         <p className="text-sm leading-tight tracking-tight text-gray-700 line-clamp-2">
           {title}
@@ -55,15 +109,37 @@ const MediaTile = (media: AnilistMedia) => {
     </>
   );
 };
+
+/**
+ * core search component
+ */
 export default function AnilistMangaSearch() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<AnilistMedia[]>([]);
+  const [selections, setSelections] = useState<AnilistMedia[]>([]);
 
+  const insertMedia = (m: AnilistMedia) => {
+    if (selections.length == 50) {
+      // TODO: Handle Toast Event
+      console.log("Reached Collection Limit");
+    }
+    const isAlreadySaved = !!selections.find((v) => v.id == m.id);
+    if (!isAlreadySaved) {
+      setSelections([...selections, m]);
+    }
+    setResults([]);
+  };
+
+  const removeMedia = (m: AnilistMedia) => {
+    setSelections([...selections.filter((v) => v.id !== m.id)]);
+  };
   useEffect(() => {
     const debounce = setTimeout(() => {
       const run = async () => {
-        if (!query) return;
+        if (!query) {
+          setResults([]);
+        }
         setLoading(true);
         setResults([]);
         console.log("Searching...", query);
@@ -103,7 +179,17 @@ export default function AnilistMangaSearch() {
             />
           </div>
         </div>
-        {results[0] && <MediaList media={results} />}
+
+        <div>
+          <SelectionContext.Provider value={{ insertMedia, removeMedia }}>
+            {results[0] && <MediaList media={results} addition={true} />}
+            <div hidden={!!results[0]}>
+              {selections[0] && (
+                <MediaList media={selections} addition={false} />
+              )}
+            </div>
+          </SelectionContext.Provider>
+        </div>
       </div>
     </>
   );
