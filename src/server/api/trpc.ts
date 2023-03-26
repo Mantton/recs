@@ -42,10 +42,10 @@ import { prisma } from "@/server/db";
  */
 export const createTRPCContext = (opts: CreateNextContextOptions) => {
   const { req } = opts;
-  const { user } = getAuth(req);
+  const { userId } = getAuth(req);
   return {
     prisma,
-    currentUser: user,
+    currentUser: userId ?? undefined,
   };
 };
 

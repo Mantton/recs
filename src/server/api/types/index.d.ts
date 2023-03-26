@@ -13,7 +13,7 @@ export type SerializedAuthor = {
 
 export type PopulatedCollection = Collection & {
   manga: (CollectionManga & {
-    manga: Omit<Manga, "tags">;
+    manga: Manga;
   })[];
   bookmarks?: Bookmark[];
   favorites?: Favorite[];

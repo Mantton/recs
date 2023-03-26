@@ -28,5 +28,5 @@ export const CreateCollectionSchema = z.object({
 
   description: z.string().min(1).max(240).trim().optional(),
 
-  includedManga: z.number().int().positive().array().nonempty().max(50),
+  includedManga: z.number().int().positive().array().min(1).max(50),
 });

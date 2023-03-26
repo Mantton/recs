@@ -3,7 +3,7 @@ import Head from "next/head";
 import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const { data, isLoading } = api.collection.getCollections.useQuery({});
   return (
     <>
       <Head>
@@ -14,7 +14,11 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col items-center justify-center "></main>
+      <main className="flex flex-col items-center justify-center ">
+        {data?.map((v) => (
+          <p key={v.id}>{v.title}</p>
+        ))}
+      </main>
     </>
   );
 };

@@ -290,7 +290,9 @@ const addManga = (media: AnilistMedia[], prisma: PrismaClient) => {
         thumbnail: manga.coverImage.large,
       },
       update: {}, // No Updates
-      select: {}, // No Selections
+      select: {
+        id: true, // Not required but prisma limitation
+      },
     });
   });
 };

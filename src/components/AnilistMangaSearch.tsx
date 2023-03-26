@@ -12,16 +12,18 @@ import Image from "next/image";
 type SelectionContextProp = {
   insertMedia: (m: AnilistMedia) => void;
   removeMedia: (m: AnilistMedia) => void;
+  selections: AnilistMedia[];
 };
-const SelectionContext = createContext<SelectionContextProp>({
+export const SelectionContext = createContext<SelectionContextProp>({
   insertMedia: () => {
     //
   },
   removeMedia: () => {
     //
   },
+  selections: [],
 });
-const useSelectionContext = () => useContext(SelectionContext);
+export const useSelectionContext = () => useContext(SelectionContext);
 
 /**
  * Search Icon Component
@@ -117,23 +119,7 @@ export default function AnilistMangaSearch() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<AnilistMedia[]>([]);
-  const [selections, setSelections] = useState<AnilistMedia[]>([]);
-
-  const insertMedia = (m: AnilistMedia) => {
-    if (selections.length == 50) {
-      // TODO: Handle Toast Event
-      console.log("Reached Collection Limit");
-    }
-    const isAlreadySaved = !!selections.find((v) => v.id == m.id);
-    if (!isAlreadySaved) {
-      setSelections([...selections, m]);
-    }
-    setResults([]);
-  };
-
-  const removeMedia = (m: AnilistMedia) => {
-    setSelections([...selections.filter((v) => v.id !== m.id)]);
-  };
+  const { selections } = useSelectionContext();
   useEffect(() => {
     const debounce = setTimeout(() => {
       const run = async () => {
@@ -142,7 +128,6 @@ export default function AnilistMangaSearch() {
         }
         setLoading(true);
         setResults([]);
-        console.log("Searching...", query);
         try {
           const data = await searchAnilist(query);
           setResults(data);
@@ -154,6 +139,10 @@ export default function AnilistMangaSearch() {
 
     return () => clearTimeout(debounce);
   }, [query]);
+
+  useEffect(() => {
+    setResults([]);
+  }, [selections]);
 
   return (
     <>
@@ -181,14 +170,10 @@ export default function AnilistMangaSearch() {
         </div>
 
         <div>
-          <SelectionContext.Provider value={{ insertMedia, removeMedia }}>
-            {results[0] && <MediaList media={results} addition={true} />}
-            <div hidden={!!results[0]}>
-              {selections[0] && (
-                <MediaList media={selections} addition={false} />
-              )}
-            </div>
-          </SelectionContext.Provider>
+          {results[0] && <MediaList media={results} addition={true} />}
+          <div hidden={!!results[0]}>
+            {selections[0] && <MediaList media={selections} addition={false} />}
+          </div>
         </div>
       </div>
     </>

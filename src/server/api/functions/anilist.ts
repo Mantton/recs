@@ -2,7 +2,7 @@ import type { AnilistMedia, AnilistQueryResponse } from "@/types";
 import { MediaQuery } from "../utils/queries";
 
 export const getAnilistMedia = async (mediaIds: number[]) => {
-  const ids = new Set(mediaIds);
+  const ids = Array.from(new Set(mediaIds));
   const body = JSON.stringify({
     query: MediaQuery,
     variables: {

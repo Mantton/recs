@@ -15,7 +15,7 @@ export const collectionsRouter = createTRPCRouter({
   getCollections: publicProcedure
     .input(GetCollectionsSchema)
     .query(({ ctx, input }) => {
-      const userId = ctx.currentUser?.id;
+      const userId = ctx.currentUser;
       return getCollections({ ...input, userId }, ctx.prisma);
     }),
 
@@ -32,7 +32,7 @@ export const collectionsRouter = createTRPCRouter({
   createCollection: privateProcedure
     .input(CreateCollectionSchema)
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.currentUser.id;
+      const userId = ctx.currentUser;
       return createCollection({ ...input, userId }, ctx.prisma);
     }),
 
