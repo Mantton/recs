@@ -13,6 +13,10 @@ const urlMatches = (path: string, checks: string[]) => {
 
 export default withClerkMiddleware((req: NextRequest) => {
   const path = req.nextUrl.pathname;
+  if (path === "/") {
+    const url = new URL("/recs", req.url);
+    return NextResponse.redirect(url);
+  }
 
   // No Redirect needed
   if (!urlMatches(path, [...AUTHENTICATED_REDIRECTS, ...PRIVATE_REDIRECTS]))
@@ -38,5 +42,5 @@ export default withClerkMiddleware((req: NextRequest) => {
 
 // Stop Middleware running on static files
 export const config = {
-  matcher: "/((?!_next/image|_next/static|favicon.ico).*)",
+  matcher: ["/sign-in", "/profile", "/api/:path*", "/"],
 };

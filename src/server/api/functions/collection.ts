@@ -81,7 +81,6 @@ export const getCollections = async (
     skip: SKIP,
     take: TAKE,
     orderBy: [order, { dateCreated: "asc" }],
-
     /**
      * Query for collections by author, by manga or by tag
      */

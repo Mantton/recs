@@ -15,9 +15,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex flex-col items-center justify-center ">
-        {data?.map((v) => (
-          <p key={v.id}>{v.title}</p>
-        ))}
+        <p>Valor Valeris!</p>
       </main>
     </>
   );

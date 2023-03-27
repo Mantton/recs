@@ -10,7 +10,7 @@ import { useState } from "react";
 import { api } from "@/utils/api";
 import { LoadingSpinner } from "@/components/loading";
 import { useRouter } from "next/router";
-import slugify from "slugify";
+import { slug } from "@/utils/slug";
 
 const schema = z.object({
   title: z.string().min(3).max(50).trim(),
@@ -21,7 +21,7 @@ export default function CreateCollectionsPage() {
 
   const { mutate, isLoading } = api.collection.createCollection.useMutation({
     onSuccess: (data) => {
-      void router.push(`/collections/${data.id}/${slugify(data.title)}`);
+      void router.push(`/collections/${data.id}/${slug(data.title)}`);
     },
   });
   const [selections, setSelections] = useState<AnilistMedia[]>([]);
@@ -55,7 +55,7 @@ export default function CreateCollectionsPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
   return (
     <>

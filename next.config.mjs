@@ -22,6 +22,12 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "*.gravatar.com",
+        port: "",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
         port: "",
         pathname: "**",
         hostname: "s4.anilist.co",
