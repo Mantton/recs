@@ -6,7 +6,7 @@ import { getUser, getUsers } from "./clerk";
 import { serializeCollection } from "../utils/serializers";
 import { TRPCError } from "@trpc/server";
 import { getAnilistMedia, getAnilistMediaTags } from "./anilist";
-import { type AnilistMedia } from "@/types";
+import { type AnilistSearchMedia } from "@/types";
 type GetCollectionsParams = z.infer<typeof GetCollectionsSchema> & {
   userId?: string;
 };
@@ -278,7 +278,7 @@ export const createCollection = async (
  * @param manga The List of anilist media to save to db
  * @param prisma PrismaClient
  */
-const addManga = (media: AnilistMedia[], prisma: PrismaClient) => {
+const addManga = (media: AnilistSearchMedia[], prisma: PrismaClient) => {
   return media.map((manga) => {
     return prisma.manga.upsert({
       where: { id: manga.id },
@@ -299,7 +299,7 @@ const addManga = (media: AnilistMedia[], prisma: PrismaClient) => {
 /**
  * Picks the tags which appear in at least 70% of the included titles
  */
-const prepareTags = (manga: AnilistMedia[]) => {
+const prepareTags = (manga: AnilistSearchMedia[]) => {
   const occurrencesOf = (item: string, array: string[]) =>
     array.reduce(
       (counter, current) => (item === current ? counter + 1 : counter),

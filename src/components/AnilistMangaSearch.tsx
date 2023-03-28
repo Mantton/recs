@@ -1,4 +1,4 @@
-import { type AnilistMedia } from "@/types";
+import { type AnilistSearchMedia } from "@/types";
 import { searchAnilist } from "@/utils/anilist";
 import { useState, useEffect, useContext, createContext } from "react";
 import { LoadingSpinner } from "./loading";
@@ -10,9 +10,9 @@ import Image from "next/image";
  * There might be an easier way of doing this lol
  */
 type SelectionContextProp = {
-  insertMedia: (m: AnilistMedia) => void;
-  removeMedia: (m: AnilistMedia) => void;
-  selections: AnilistMedia[];
+  insertMedia: (m: AnilistSearchMedia) => void;
+  removeMedia: (m: AnilistSearchMedia) => void;
+  selections: AnilistSearchMedia[];
 };
 export const SelectionContext = createContext<SelectionContextProp>({
   insertMedia: () => {
@@ -56,7 +56,7 @@ const MediaList = ({
   media,
   addition,
 }: {
-  media: AnilistMedia[];
+  media: AnilistSearchMedia[];
   addition: boolean;
 }) => {
   return (
@@ -77,7 +77,7 @@ const MediaTile = ({
   media,
   addition,
 }: {
-  media: AnilistMedia;
+  media: AnilistSearchMedia;
   addition: boolean;
 }) => {
   const title = media.title.english ?? media.title.userPreferred;
@@ -118,7 +118,7 @@ const MediaTile = ({
 export default function AnilistMangaSearch() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<AnilistMedia[]>([]);
+  const [results, setResults] = useState<AnilistSearchMedia[]>([]);
   const { selections } = useSelectionContext();
   useEffect(() => {
     const debounce = setTimeout(() => {

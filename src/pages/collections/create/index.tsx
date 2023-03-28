@@ -5,7 +5,7 @@ import { z } from "zod";
 import AnilistMangaSearch, {
   SelectionContext,
 } from "@/components/AnilistMangaSearch";
-import { type AnilistMedia } from "@/types";
+import { type AnilistSearchMedia } from "@/types";
 import { useState } from "react";
 import { api } from "@/utils/api";
 import { LoadingSpinner } from "@/components/loading";
@@ -24,13 +24,13 @@ export default function CreateCollectionsPage() {
       void router.push(`/collections/${data.id}/${slug(data.title)}`);
     },
   });
-  const [selections, setSelections] = useState<AnilistMedia[]>([]);
+  const [selections, setSelections] = useState<AnilistSearchMedia[]>([]);
 
   const submitNewCollection = ({
     title,
     description,
     selections,
-  }: z.infer<typeof schema> & { selections: AnilistMedia[] }) => {
+  }: z.infer<typeof schema> & { selections: AnilistSearchMedia[] }) => {
     mutate({
       title,
       description,
@@ -38,7 +38,7 @@ export default function CreateCollectionsPage() {
     });
   };
 
-  const insertMedia = (m: AnilistMedia) => {
+  const insertMedia = (m: AnilistSearchMedia) => {
     if (selections.length == 50) {
       // TODO: Handle Toast Event
       console.log("Reached Collection Limit");
@@ -49,7 +49,7 @@ export default function CreateCollectionsPage() {
     }
   };
 
-  const removeMedia = (m: AnilistMedia) => {
+  const removeMedia = (m: AnilistSearchMedia) => {
     setSelections([...selections.filter((v) => v.id !== m.id)]);
   };
   const {

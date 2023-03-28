@@ -6,18 +6,40 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import type { Manga } from "@prisma/client";
 import { slug } from "@/utils/slug";
 import { HiOutlineBookmark, HiOutlineHeart } from "react-icons/hi";
-import { type Dispatch, type SetStateAction, useState, Fragment } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useState,
+  useContext,
+  createContext,
+  Fragment,
+  useEffect,
+} from "react";
 import clsx from "clsx";
 import { Transition } from "@headlessui/react";
+import type { AnilistIDMedia } from "@/types";
+import { LoadingSpinner } from "../loading";
+import { anilistStatus } from "@/server/api/functions/anilist";
 
 dayjs.extend(relativeTime);
+
+type MediaInfoContextProps = {
+  getMediaInfo: (id: number) => Promise<AnilistIDMedia>;
+};
+
+export const MediaInfoContext = createContext<MediaInfoContextProps>({
+  getMediaInfo: () => {
+    throw "not ready";
+  },
+});
+const useMediaInfoContext = () => useContext(MediaInfoContext);
 
 const ActionButtons = ({
   collection,
 }: {
   collection: SerializedCollection;
 }) => {
-  const { isBookmarked, isFavorite, bookmarks, favorites } = collection;
+  const { isBookmarked, isFavorite } = collection;
   const [bookmark, setBookmark] = useState(isBookmarked);
   const [favorite, setFavorite] = useState(isFavorite);
 
@@ -122,19 +144,62 @@ const MangaTile = ({ manga: { title, id, thumbnail } }: { manga: Manga }) => {
       <Transition
         as={Fragment}
         show={showInfo}
-        enter="transition-opacity duration-75"
+        enter="transition-opacity duration-[25ms]"
         enterFrom="opacity-0"
         enterTo="opacity-100"
-        leave="transition-opacity duration-150"
+        leave="transition-opacity duration-[25ms]"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <div className="pointer-events-none absolute left-full top-[12.5%] z-10 mx-2 h-3/4 min-w-[200%] max-w-lg select-none rounded-lg bg-slate-300 p-2 opacity-95 shadow-lg">
-          <p className="text-sm font-semibold leading-tight tracking-tight">
+        <div className="pointer-events-none absolute left-full  top-[12.5%] z-10 mx-2 h-fit min-h-[50%] min-w-[200%] max-w-lg select-none rounded-lg bg-slate-300 p-2 opacity-95 shadow-lg">
+          <p className="text-lg font-semibold leading-tight tracking-tight">
             {title}
           </p>
+          <MangaInfoPanel id={id} />
         </div>
       </Transition>
+    </>
+  );
+};
+
+const MangaInfoPanel = ({ id }: { id: number }) => {
+  const { getMediaInfo } = useMediaInfoContext();
+  const [data, setData] = useState<AnilistIDMedia | null>(null);
+
+  useEffect(() => {
+    if (data) {
+      return;
+    }
+
+    const run = async () => {
+      try {
+        const d = await getMediaInfo(id);
+        setData(d);
+      } catch {
+        //TODO: handle error state
+      }
+    };
+    void run();
+  }, [id, data, getMediaInfo]);
+
+  if (!data)
+    return (
+      <div className="flex items-center justify-center text-gray-700">
+        <LoadingSpinner size={20} />
+      </div>
+    );
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col text-sm">
+          <span>{anilistStatus(data.status)}</span>
+          <span>{data.favourites.toLocaleString()} Favorites</span>
+          <span>{data.popularity.toLocaleString()} Following</span>
+        </div>
+        <span className="text-xl font-bold tracking-wide text-slate-900">
+          {data.averageScore}%
+        </span>
+      </div>
     </>
   );
 };

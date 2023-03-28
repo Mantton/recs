@@ -1,4 +1,4 @@
-import type { AnilistMedia, AnilistQueryResponse } from "@/types";
+import type { AnilistSearchMedia, AnilistSearchQueryResponse } from "@/types";
 import { MediaQuery } from "../utils/queries";
 
 export const getAnilistMedia = async (mediaIds: number[]) => {
@@ -20,10 +20,25 @@ export const getAnilistMedia = async (mediaIds: number[]) => {
     body,
   });
 
-  const data = <AnilistQueryResponse>await response.json(); // This is equivalent to (await response.json()) as AnilistQueryResponse
+  const data = <AnilistSearchQueryResponse>await response.json(); // This is equivalent to (await response.json()) as AnilistQueryResponse
   return data.data.Page.media;
 };
 
-export const getAnilistMediaTags = (media: AnilistMedia) => {
+export const getAnilistMediaTags = (media: AnilistSearchMedia) => {
   return media.genres.concat(media.tags.map((v) => v.name));
+};
+
+export const anilistStatus = (str: string) => {
+  switch (str.toLowerCase()) {
+    case "releasing":
+      return "Ongoing";
+    case "finished":
+      return "Completed";
+    case "CANCELLED":
+      return "Cancelled";
+    case "HIATUS":
+      return "Hiatus";
+    case "NOT_YET_RELEASED":
+      return "Planned";
+  }
 };

@@ -3,9 +3,13 @@ import Head from "next/head";
 import { api } from "@/utils/api";
 import { LoadingSpinner } from "@/components/loading";
 import type { SerializedCollection } from "@/server/api/utils/serializers";
-import CollectionView from "@/components/collection/CollectionView";
+import CollectionView, {
+  MediaInfoContext,
+} from "@/components/collection/CollectionView";
+import type { AnilistIDMedia } from "@/types";
+import { getAnilistMediaInfo } from "@/utils/anilist";
 
-const BuildGrid = (data: SerializedCollection[]) => {
+const BuildGrid = ({ data }: { data: SerializedCollection[] }) => {
   return (
     <div
       id="collections"
@@ -19,6 +23,16 @@ const BuildGrid = (data: SerializedCollection[]) => {
 };
 const Home: NextPage = () => {
   const { data, isLoading } = api.collection.getCollections.useQuery({});
+  const cache: Record<number, AnilistIDMedia> = {};
+
+  const getMediaInfo = async (id: number) => {
+    let d = cache[id];
+    if (d) return d;
+    d = await getAnilistMediaInfo(id);
+    cache[id] = d;
+    return d;
+  };
+
   return (
     <>
       <Head>
@@ -31,7 +45,11 @@ const Home: NextPage = () => {
       </Head>
       <div className="flex items-center justify-center">
         {isLoading && <LoadingSpinner />}
-        {data && BuildGrid(data)}
+        {data && (
+          <MediaInfoContext.Provider value={{ getMediaInfo }}>
+            <BuildGrid data={data} />
+          </MediaInfoContext.Provider>
+        )}
       </div>
     </>
   );
