@@ -6,7 +6,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import type { Manga } from "@prisma/client";
 import { slug } from "@/utils/slug";
 import { HiOutlineBookmark, HiOutlineHeart } from "react-icons/hi";
-import { Dispatch, SetStateAction, useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import clsx from "clsx";
 
 dayjs.extend(relativeTime);
@@ -35,16 +35,17 @@ const ActionButtons = ({
               ["h-[1.25rem] w-[1.25rem] text-slate-400 transition-colors duration-300"]:
                 true,
               ["hover:text-slate-600"]: !bookmark,
-              ["fill-current"]: bookmark,
+              ["fill-current hover:fill-none"]: bookmark,
             })}
           />
         </button>
         <button onClick={() => toggleState(setFavorite, favorite)}>
           <HiOutlineHeart
             className={clsx({
-              ["h-[1.25rem] w-[1.25rem] text-slate-500 transition-colors duration-300 hover:text-red-400"]:
+              ["h-[1.25rem] w-[1.25rem] transition-colors duration-300 hover:text-red-400"]:
                 true,
-              ["fill-current text-red-400"]: favorite,
+              ["text-slate-500 "]: !favorite,
+              ["fill-current text-red-400 hover:fill-none"]: favorite,
             })}
           />
         </button>

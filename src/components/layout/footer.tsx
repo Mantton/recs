@@ -4,7 +4,7 @@ import { RxMoon } from "react-icons/rx";
 
 export default function Footer() {
   return (
-    <footer className=" bg-slate-100 dark:bg-slate-500">
+    <footer className="bg-slate-100 dark:bg-slate-500">
       <div className="mx-auto px-2 pt-8 pb-4 sm:px-6 ">
         <div className="flex justify-between">
           <div className="info">
@@ -23,7 +23,7 @@ export default function Footer() {
                 href="https://mantton.com"
                 target="_blank"
                 rel="noreferrer"
-                className="transition-colors duration-500 ease-in-out hover:text-purple-400"
+                className="transition-colors duration-500 ease-in-out hover:text-indigo-300"
               >
                 <p>Created by Mantton 🚀</p>
               </Link>

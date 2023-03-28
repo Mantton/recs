@@ -1,9 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
-  const { data, isLoading } = api.collection.getCollections.useQuery({});
   return (
     <>
       <Head>
@@ -14,9 +12,9 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col items-center justify-center ">
+      <div className="flex flex-col items-center justify-center ">
         <p>Valor Valeris!</p>
-      </main>
+      </div>
     </>
   );
 };

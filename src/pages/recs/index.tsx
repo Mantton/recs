@@ -29,10 +29,10 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col items-center justify-center">
+      <div className="flex items-center justify-center">
         {isLoading && <LoadingSpinner />}
         {data && BuildGrid(data)}
-      </main>
+      </div>
     </>
   );
 };
