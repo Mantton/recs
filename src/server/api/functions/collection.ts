@@ -192,7 +192,7 @@ export const createCollection = async (
 
   // Create Collection & Other Related Records
   const ids = manga.map((v) => v.id);
-  const tags = Array.from(new Set(manga.flatMap(getAnilistMediaTags)));
+  const tags = prepareTags(manga);
 
   const collection = await prisma.$transaction(async (tx) => {
     // Create Collection record
@@ -294,4 +294,21 @@ const addManga = (media: AnilistMedia[], prisma: PrismaClient) => {
       },
     });
   });
+};
+
+/**
+ * Picks the tags which appear in at least 70% of the included titles
+ */
+const prepareTags = (manga: AnilistMedia[]) => {
+  const occurrencesOf = (item: string, array: string[]) =>
+    array.reduce(
+      (counter, current) => (item === current ? counter + 1 : counter),
+      0
+    );
+
+  const allTags = manga.flatMap(getAnilistMediaTags);
+  const distinct = Array.from(new Set(allTags));
+  return distinct.filter(
+    (v) => occurrencesOf(v, allTags) / manga.length >= 0.6
+  );
 };

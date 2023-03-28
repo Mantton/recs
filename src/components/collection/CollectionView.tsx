@@ -28,7 +28,7 @@ const ActionButtons = ({
   };
   return (
     <>
-      <div className="flex gap-4 md:gap-3">
+      <div className="flex md:gap-3 lg:gap-[1.125rem]">
         <button onClick={() => toggleState(setBookmark, bookmark)}>
           <HiOutlineBookmark
             className={clsx({
@@ -44,7 +44,7 @@ const ActionButtons = ({
             className={clsx({
               ["h-[1.25rem] w-[1.25rem] transition-colors duration-300 hover:text-red-400"]:
                 true,
-              ["text-slate-500 "]: !favorite,
+              ["text-slate-400"]: !favorite,
               ["fill-current text-red-400 hover:fill-none"]: favorite,
             })}
           />
@@ -84,7 +84,7 @@ const MangaComponent = ({ manga, link }: { manga: Manga[]; link: string }) => {
   const excessCount = manga.length - 8;
   const selection = new Array(8).fill(undefined).map((_, i) => manga[i]);
   return (
-    <div className="flex-1 ">
+    <div className="">
       <div className="grid grid-cols-4 justify-end gap-2">
         {selection.map((m, i) => {
           if (m) {
@@ -100,7 +100,7 @@ const MangaComponent = ({ manga, link }: { manga: Manga[]; link: string }) => {
       {exceedsCells && (
         <div className="flex justify-end">
           <Link href={link}>
-            <p className="p-2  text-xs font-semibold text-slate-500 hover:underline">
+            <p className="px-2 pt-2  text-xs font-semibold text-slate-500 hover:underline">
               +{excessCount} More
             </p>
           </Link>
@@ -170,7 +170,7 @@ export default function CollectionView(props: SerializedCollection) {
           <div>
             <Link
               href={link}
-              className="hover:underline hover:underline-offset-1"
+              className="hover:underline hover:underline-offset-4"
             >
               <p className="text-lg font-semibold">{title}</p>
             </Link>
