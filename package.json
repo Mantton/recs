@@ -11,10 +11,9 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.11.13",
+    "@headlessui/react": "^1.7.13",
     "@hookform/resolvers": "^3.0.0",
     "@prisma/client": "^4.9.0",
-    "@tailwindcss/aspect-ratio": "^0.4.2",
-    "@tailwindcss/line-clamp": "^0.4.2",
     "@tanstack/react-query": "^4.20.2",
     "@trpc/client": "^10.9.0",
     "@trpc/next": "^10.9.0",
@@ -36,7 +35,9 @@
     "zod": "^3.20.6"
   },
   "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/line-clamp": "^0.4.2",
     "@types/eslint": "^8.21.1",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.14.0",

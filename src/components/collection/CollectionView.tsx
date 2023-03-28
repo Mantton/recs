@@ -6,8 +6,9 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import type { Manga } from "@prisma/client";
 import { slug } from "@/utils/slug";
 import { HiOutlineBookmark, HiOutlineHeart } from "react-icons/hi";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { type Dispatch, type SetStateAction, useState, Fragment } from "react";
 import clsx from "clsx";
+import { Transition } from "@headlessui/react";
 
 dayjs.extend(relativeTime);
 
@@ -28,7 +29,7 @@ const ActionButtons = ({
   };
   return (
     <>
-      <div className="flex md:gap-3 lg:gap-[1.125rem]">
+      <div className="flex gap-2 md:gap-3 lg:gap-[1.125rem]">
         <button onClick={() => toggleState(setBookmark, bookmark)}>
           <HiOutlineBookmark
             className={clsx({
@@ -60,14 +61,9 @@ const TagsComponent = ({ tags, link }: { tags: string[]; link: string }) => {
     <>
       <div className="my-2 flex flex-wrap gap-2">
         {tags.slice(0, 6).map((tag) => (
-          <a
-            href={`https://anilist.co/search/manga?genres=${tag}`}
-            key={tag}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link href={`/recs?t=${tag}`} key={tag}>
             <p className={tagClassName}>{tag}</p>
-          </a>
+          </Link>
         ))}
         {tags.length > 6 && (
           <Link href={link}>
@@ -85,14 +81,14 @@ const MangaComponent = ({ manga, link }: { manga: Manga[]; link: string }) => {
   const selection = new Array(8).fill(undefined).map((_, i) => manga[i]);
   return (
     <div className="">
-      <div className="grid grid-cols-4 justify-end gap-2">
+      <div className="grid grid-cols-4 gap-2">
         {selection.map((m, i) => {
-          if (m) {
-            return <MangaTile manga={m} key={m.id} />;
-          }
           return (
-            <div className="aspect-w-2 aspect-h-3 " key={i}>
-              <div className="rounded-lg bg-slate-100"></div>
+            <div
+              className="aspect-w-2 aspect-h-3 rounded-md bg-slate-100"
+              key={i}
+            >
+              {m && <MangaTile manga={m} key={m.id} />}
             </div>
           );
         })}
@@ -100,7 +96,7 @@ const MangaComponent = ({ manga, link }: { manga: Manga[]; link: string }) => {
       {exceedsCells && (
         <div className="flex justify-end">
           <Link href={link}>
-            <p className="px-2 pt-2  text-xs font-semibold text-slate-500 hover:underline">
+            <p className="px-2 pt-2 text-xs font-semibold text-slate-500 hover:underline">
               +{excessCount} More
             </p>
           </Link>
@@ -111,15 +107,35 @@ const MangaComponent = ({ manga, link }: { manga: Manga[]; link: string }) => {
 };
 
 const MangaTile = ({ manga: { title, id, thumbnail } }: { manga: Manga }) => {
+  const [showInfo, setShowInfo] = useState(false);
+
   return (
-    <a
-      className="aspect-w-2 aspect-h-3  rounded-md object-fill transition-all hover:translate-x-[2px] hover:-translate-y-[2px] hover:ring-[2.5px] hover:ring-slate-400"
-      href={`https://anilist.co/manga/${id}`}
-      target="_blank"
-      rel="noreferrer noopener"
-    >
-      <Image src={thumbnail} alt={title} fill className="rounded-md" />
-    </a>
+    <>
+      <Link
+        onMouseEnter={() => setShowInfo(true)}
+        onMouseLeave={() => setShowInfo(false)}
+        className="rounded-md object-fill transition-transform hover:translate-x-[1px] hover:-translate-y-[1px] hover:ring-[1.5px] hover:ring-slate-400"
+        href={`/recs?m=${id}`}
+      >
+        <Image src={thumbnail} alt={title} fill className="rounded-md" />
+      </Link>
+      <Transition
+        as={Fragment}
+        show={showInfo}
+        enter="transition-opacity duration-75"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity duration-150"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <div className="pointer-events-none absolute left-full top-[12.5%] z-10 mx-2 h-3/4 min-w-[200%] max-w-lg select-none rounded-lg bg-slate-300 p-2 opacity-95 shadow-lg">
+          <p className="text-sm font-semibold leading-tight tracking-tight">
+            {title}
+          </p>
+        </div>
+      </Transition>
+    </>
   );
 };
 export default function CollectionView(props: SerializedCollection) {
