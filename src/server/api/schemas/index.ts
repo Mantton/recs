@@ -30,3 +30,7 @@ export const CreateCollectionSchema = z.object({
 
   includedManga: z.number().int().positive().array().min(1).max(50),
 });
+
+export const ToggleStateSchema = z.object({
+  id: z.number().nonnegative(),
+});

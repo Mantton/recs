@@ -20,6 +20,7 @@ import { Transition } from "@headlessui/react";
 import type { AnilistIDMedia } from "@/types";
 import { LoadingSpinner } from "../loading";
 import { anilistStatus } from "@/server/api/functions/anilist";
+import { api } from "@/utils/api";
 
 dayjs.extend(relativeTime);
 
@@ -43,6 +44,8 @@ const ActionButtons = ({
   const [bookmark, setBookmark] = useState(isBookmarked);
   const [favorite, setFavorite] = useState(isFavorite);
 
+  const { mutate: mFav } = api.collection.toggleFavorite.useMutation();
+  const { mutate: mBK } = api.collection.toggleBookmark.useMutation();
   const toggleState = (
     dispatch: Dispatch<SetStateAction<boolean>>,
     value: boolean
@@ -52,7 +55,12 @@ const ActionButtons = ({
   return (
     <>
       <div className="flex gap-2 md:gap-3 lg:gap-[1.125rem]">
-        <button onClick={() => toggleState(setBookmark, bookmark)}>
+        <button
+          onClick={() => {
+            toggleState(setBookmark, bookmark);
+            mBK({ id: collection.id });
+          }}
+        >
           <HiOutlineBookmark
             className={clsx({
               ["h-[1.25rem] w-[1.25rem] text-slate-400 transition-colors duration-300"]:
@@ -62,7 +70,12 @@ const ActionButtons = ({
             })}
           />
         </button>
-        <button onClick={() => toggleState(setFavorite, favorite)}>
+        <button
+          onClick={() => {
+            toggleState(setFavorite, favorite);
+            mFav({ id: collection.id });
+          }}
+        >
           <HiOutlineHeart
             className={clsx({
               ["h-[1.25rem] w-[1.25rem] transition-colors duration-300 hover:text-red-400"]:

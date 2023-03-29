@@ -64,11 +64,11 @@ model CollectionManga {
 
 // Bookmark
 model Bookmark {
-    id           Int        @id @default(autoincrement())
     collection   Collection @relation(fields: [collectionId], references: [id])
     accountId    String
     collectionId Int
 
+    @@unique([accountId, collectionId])
     @@index([accountId])
     @@index([collectionId])
     @@map("bookmarks")
@@ -83,5 +83,6 @@ model Favorite {
 
     @@unique([accountId, collectionId])
     @@index([collectionId])
+    @@index([accountId])
     @@map("favorites")
 }

@@ -312,3 +312,76 @@ const prepareTags = (manga: AnilistSearchMedia[]) => {
     (v) => occurrencesOf(v, allTags) / manga.length >= 0.6
   );
 };
+
+export const toggleFavorite = async (
+  accountId: string,
+  collectionId: number,
+  prisma: PrismaClient
+) => {
+  const target = await prisma.favorite.findUnique({
+    where: {
+      accountId_collectionId: {
+        accountId,
+        collectionId,
+      },
+    },
+  });
+
+  // If Favorite, remove
+  if (target) {
+    await prisma.favorite.delete({
+      where: {
+        accountId_collectionId: {
+          accountId,
+          collectionId,
+        },
+      },
+    });
+    return;
+  }
+
+  // Add record if not.
+  await prisma.favorite.create({
+    data: {
+      accountId,
+      collectionId,
+    },
+  });
+};
+
+export const toggleBookmark = async (
+  accountId: string,
+  collectionId: number,
+  prisma: PrismaClient
+) => {
+  //
+  const target = await prisma.bookmark.findUnique({
+    where: {
+      accountId_collectionId: {
+        accountId,
+        collectionId,
+      },
+    },
+  });
+
+  // If bookmarked, remove
+  if (target) {
+    await prisma.bookmark.delete({
+      where: {
+        accountId_collectionId: {
+          accountId,
+          collectionId,
+        },
+      },
+    });
+    return;
+  }
+
+  // Add record if not.
+  await prisma.bookmark.create({
+    data: {
+      accountId,
+      collectionId,
+    },
+  });
+};

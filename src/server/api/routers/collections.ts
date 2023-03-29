@@ -1,12 +1,19 @@
-import { z } from "zod";
-
 import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { CreateCollectionSchema, GetCollectionsSchema } from "../schemas";
-import { createCollection, getCollections } from "../functions";
+import {
+  CreateCollectionSchema,
+  GetCollectionsSchema,
+  ToggleStateSchema,
+} from "../schemas";
+import {
+  createCollection,
+  getCollections,
+  toggleBookmark,
+  toggleFavorite,
+} from "../functions";
 
 export const collectionsRouter = createTRPCRouter({
   /**
@@ -58,30 +65,20 @@ export const collectionsRouter = createTRPCRouter({
   }),
 
   /**
-   * Adds A Manga To the Current User's Favorites
+   * Toggles the Favorite State for a collection
    */
-  favoriteCollection: privateProcedure.mutation(async ({ ctx }) => {
-    //
-  }),
+  toggleFavorite: privateProcedure
+    .input(ToggleStateSchema)
+    .mutation(({ ctx, input }) => {
+      return toggleFavorite(ctx.currentUser, input.id, ctx.prisma);
+    }),
 
   /**
-   * Removes A Manga From the current users favorites
+   * toggles the bookmark state of a collection
    */
-  removeCollectionFromFavorite: privateProcedure.mutation(async ({ ctx }) => {
-    //
-  }),
-
-  /**
-   * Adds a manga to a users bookmarks
-   */
-  bookmarkCollection: privateProcedure.mutation(async ({ ctx }) => {
-    //
-  }),
-
-  /**
-   * remove manga from user's bookmarks
-   */
-  removeCollectionFromBookmarks: privateProcedure.mutation(async ({ ctx }) => {
-    //
-  }),
+  toggleBookmark: privateProcedure
+    .input(ToggleStateSchema)
+    .mutation(async ({ ctx, input }) => {
+      return toggleBookmark(ctx.currentUser, input.id, ctx.prisma);
+    }),
 });
