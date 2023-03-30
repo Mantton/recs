@@ -132,6 +132,7 @@ export default function AnilistMangaSearch() {
       const run = async () => {
         if (!query) {
           setResults([]);
+          return;
         }
         setLoading(true);
         setResults([]);
@@ -161,21 +162,21 @@ export default function AnilistMangaSearch() {
               insertMedia(v as AnilistSearchMedia);
             }}
           >
-            <div className="relative flex h-12 w-full items-center overflow-hidden rounded-lg bg-white focus-within:shadow-lg">
-              <div className="">
+            <div className="relative flex h-12 w-full items-center overflow-hidden rounded-lg bg-white  focus-within:shadow-lg">
+              <div className="border-none">
                 {!loading && <SearchIcon />}
                 {loading && (
-                  <div className="p-2">
+                  <div className="mx-4">
                     <LoadingSpinner />
                   </div>
                 )}
               </div>
               <Combobox.Input
-                className="h-full w-full border-none pr-2 text-sm text-gray-700"
+                className="h-full w-full border-none pr-2 text-sm text-gray-700 outline-none focus:outline-none"
                 onChange={(event) => setQuery(event.target.value.trim())}
                 id="search"
                 placeholder="Search Anilist"
-                // autoComplete="off"
+                autoComplete="off"
                 // onKeyPress={(e) => {
                 //   e.key === "Enter" && e.preventDefault();
                 // }}
@@ -187,7 +188,10 @@ export default function AnilistMangaSearch() {
               leaveTo="opacity-0"
               afterLeave={() => setQuery("")}
             >
-              <Combobox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-white p-2 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ">
+              <Combobox.Options
+                hidden={results.length == 0}
+                className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-white p-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none "
+              >
                 {results.map((manga) => (
                   <Combobox.Option key={manga.id} value={manga}>
                     <div className="flex cursor-pointer gap-4 rounded-md p-4 transition-colors duration-200 hover:bg-slate-100">
@@ -210,9 +214,9 @@ export default function AnilistMangaSearch() {
                           )}
                         <div className="flex flex-wrap items-center gap-2">
                           {manga.isAdult && (
-                            <div className="w-fit rounded-md bg-red-100 px-1 py-1 text-slate-500">
-                              <p className="text-xs leading-tight tracking-tighter text-opacity-95">
-                                NSFW
+                            <div className="h-fit w-fit rounded-md bg-red-200 px-1 py-1 text-slate-600">
+                              <p className="text-xs leading-tight text-opacity-95">
+                                18+
                               </p>
                             </div>
                           )}
@@ -220,7 +224,7 @@ export default function AnilistMangaSearch() {
                             <div className="flex gap-2 ">
                               {manga.genres.map((v) => (
                                 <span
-                                  className="w-fit rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-500"
+                                  className="h-fit w-fit rounded-md bg-slate-200 px-2 py-1 text-xs text-slate-500"
                                   key={v}
                                 >
                                   {v}
