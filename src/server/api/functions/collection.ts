@@ -1,6 +1,6 @@
 import { type Prisma, type PrismaClient } from "@prisma/client";
 import type { z } from "zod";
-import { type CreateCollectionSchema, GetCollectionSort } from "../schemas";
+import { type CreateCollectionSchema } from "../schemas";
 import type { GetCollectionsSchema } from "../schemas";
 import { getUser, getUsers } from "./clerk";
 import { serializeCollection } from "../utils/serializers";
@@ -14,7 +14,6 @@ type GetCollectionsParams = z.infer<typeof GetCollectionsSchema> & {
 type CreateCollectionsParams = z.infer<typeof CreateCollectionSchema> & {
   userId: string;
 };
-
 /**
  * Method gets collections from prisma
  * @returns Collection Array
@@ -40,7 +39,6 @@ export const getCollections = async (
   //
   const accountId = query.userId;
   const TAKE = 30;
-  const SKIP = Math.max(query.page - 1 * TAKE, 0);
   const SORT = query.asc ? "asc" : "desc";
 
   // Set Order Property
@@ -51,22 +49,22 @@ export const getCollections = async (
   };
 
   switch (query.sort) {
-    case GetCollectionSort.bookmarks:
+    case "bookmarks":
       break;
-    case GetCollectionSort.favorites:
+    case "favorites":
       order = {
         favorites: {
           _count: SORT,
         },
       };
       break;
-    case GetCollectionSort.creationDate:
+    case "creationDate":
       order = {
         dateCreated: SORT,
       };
       break;
 
-    case GetCollectionSort.mangaCount:
+    case "mangaCount":
       order = {
         manga: {
           _count: SORT,
@@ -78,9 +76,14 @@ export const getCollections = async (
   const whereClause = query.authorId || query.mangaId || query.tagId;
   // Query prisma for collections
   const collections = await prisma.collection.findMany({
-    skip: SKIP,
     take: TAKE,
     orderBy: [order, { dateCreated: "asc" }],
+    ...(query.cursor && {
+      cursor: {
+        id: query.cursor,
+      },
+      skip: 1, // Skip Cursor
+    }),
     /**
      * Query for collections by author, by manga or by tag
      */

@@ -8,6 +8,8 @@ import CollectionView, {
 } from "@/components/collection/CollectionView";
 import type { AnilistIDMedia } from "@/types";
 import { getAnilistMediaInfo } from "@/utils/anilist";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const BuildGrid = ({ data }: { data: SerializedCollection[] }) => {
   return (
@@ -21,8 +23,26 @@ const BuildGrid = ({ data }: { data: SerializedCollection[] }) => {
     </div>
   );
 };
+
 const Home: NextPage = () => {
-  const { data, isLoading } = api.collection.getCollections.useQuery({});
+  const { query, isReady } = useRouter();
+
+  const mangaId =
+    query.m && typeof query.m === "string" && !Number.isNaN(Number(query.m))
+      ? Number(query.m)
+      : undefined;
+  const tagId = query.t && typeof query.t === "string" ? query.t : undefined;
+  const sort = query.s && typeof query.s === "string" ? query.s : undefined;
+  const asc =
+    query.asc && typeof query.asc === "string"
+      ? query.asc === "true"
+      : undefined;
+  const { data, isLoading } = api.collection.getCollections.useInfiniteQuery({
+    mangaId,
+    tagId,
+    sort,
+    asc,
+  });
   const cache: Record<number, AnilistIDMedia> = {};
 
   const getMediaInfo = async (id: number) => {
@@ -32,6 +52,12 @@ const Home: NextPage = () => {
     cache[id] = d;
     return d;
   };
+
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+  }, [isReady]);
 
   return (
     <>
@@ -44,10 +70,10 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex items-center justify-center">
-        {isLoading && <LoadingSpinner />}
+        {(isLoading || !isReady) && <LoadingSpinner />}
         {data && (
           <MediaInfoContext.Provider value={{ getMediaInfo }}>
-            <BuildGrid data={data} />
+            <BuildGrid data={data.pages.flat()} />
           </MediaInfoContext.Provider>
         )}
       </div>
