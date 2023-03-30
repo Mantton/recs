@@ -164,8 +164,8 @@ const MangaTile = ({ manga: { title, id, thumbnail } }: { manga: Manga }) => {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <div className="pointer-events-none absolute left-full  top-[12.5%] z-10 mx-2 h-fit min-h-[50%] min-w-[200%] max-w-lg select-none rounded-lg bg-slate-300 p-2 opacity-95 shadow-lg">
-          <p className="text-lg font-semibold leading-tight tracking-tight">
+        <div className="pointer-events-none absolute left-full top-[12.5%] z-10 mx-2 h-fit min-h-[50%] w-fit min-w-[200%] select-none rounded-lg bg-slate-300 p-2 opacity-95 shadow-lg">
+          <p className="text-base font-semibold leading-tight tracking-tight">
             {title}
           </p>
           <MangaInfoPanel id={id} />
@@ -197,17 +197,25 @@ const MangaInfoPanel = ({ id }: { id: number }) => {
 
   if (!data)
     return (
-      <div className="flex items-center justify-center text-gray-700">
+      <div className="flex items-center justify-center p-4 text-gray-700">
         <LoadingSpinner size={20} />
       </div>
     );
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-6">
         <div className="flex flex-col text-sm">
-          <span>{anilistStatus(data.status)}</span>
-          <span>{data.favourites.toLocaleString()} Favorites</span>
-          <span>{data.popularity.toLocaleString()} Following</span>
+          <span className="font-medium italic">
+            {anilistStatus(data.status)}
+          </span>
+          <span className="flex items-center gap-1">
+            {data.favourites.toLocaleString()}
+            <HiOutlineHeart className="fill-current text-red-400" />
+          </span>
+          <span className="flex items-center gap-1">
+            {data.popularity.toLocaleString()}
+            <HiOutlineBookmark className="fill-current text-gray-600" />
+          </span>
         </div>
         <span className="text-xl font-bold tracking-wide text-slate-900">
           {data.averageScore}%

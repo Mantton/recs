@@ -64,6 +64,7 @@ model CollectionManga {
 
 // Bookmark
 model Bookmark {
+    timestamp    DateTime   @default(now())
     collection   Collection @relation(fields: [collectionId], references: [id])
     accountId    String
     collectionId Int
