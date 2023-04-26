@@ -7,11 +7,10 @@ import type {
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "@/server/api/root";
 import superjson from "superjson";
-import { LoadingSpinner } from "@/components/loading";
+import { LoadingPage } from "@/components/loading";
 import { prisma } from "@/server/db";
 import Head from "next/head";
 import { dateString } from "@/utils/data";
-import NSFWTag from "@/components/NSFWTag";
 import Link from "next/link";
 import Image from "next/image";
 import MangaTile, { MediaInfoContext } from "@/components/MangaTile";
@@ -63,10 +62,10 @@ export default function SingleCollectionPage(props: SSP) {
   });
 
   if (status !== "success" || isLoading) {
-    return <LoadingSpinner />;
+    return <LoadingPage />;
   }
 
-  if (!data) return <LoadingSpinner></LoadingSpinner>;
+  if (!data) return <LoadingPage></LoadingPage>;
   const { title, dateCreated, description, adultContent, author, tags, manga } =
     data;
   const tagClassName =
@@ -89,10 +88,8 @@ export default function SingleCollectionPage(props: SSP) {
       <div className="flex flex-col">
         <div className="flex flex-col">
           <div className="flex items-center justify-between ">
-            <div className="flex items-center gap-4">
-              <h1 className="text-4xl font-extrabold tracking-wide">{title}</h1>
-              {adultContent && <NSFWTag />}
-            </div>
+            <h1 className="text-4xl font-extrabold tracking-wide">{title}</h1>
+
             <div className="px-4">
               <ActionButtons collection={data} />
             </div>
@@ -126,6 +123,11 @@ export default function SingleCollectionPage(props: SSP) {
         <div>
           <div>
             <div className="my-2 flex flex-wrap gap-2">
+              {adultContent && (
+                <p className="cursor-pointer rounded-md bg-red-200 px-2 py-[3px] text-sm text-gray-700 transition-colors hover:bg-red-300 md:text-xs">
+                  NSFW
+                </p>
+              )}
               {tags.map((tag) => (
                 <Link href={`/recs?t=${tag}`} key={tag}>
                   <p className={tagClassName}>{tag}</p>

@@ -1,5 +1,5 @@
 // * Anilist
-
+import type { Dispatch, SetStateAction } from "react";
 export type AnilistSearchMedia = {
   id: number;
   title: {
@@ -45,4 +45,9 @@ export type AnilistMediaQueryResponse = {
   data: {
     Media: AnilistIDMedia;
   };
+};
+
+export type State<T> = {
+  dispatch: Dispatch<SetStateAction<T>>;
+  value: T;
 };

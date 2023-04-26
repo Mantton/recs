@@ -7,6 +7,7 @@ const config = {
   plugins: [
     require("@tailwindcss/aspect-ratio"),
     require("@tailwindcss/forms"),
+    require("@headlessui/tailwindcss"),
   ],
   darkMode: "class",
   future: {

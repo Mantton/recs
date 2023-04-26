@@ -4,7 +4,7 @@ import Head from "next/head";
 const UserProfilePage = () => (
   <>
     <Head>
-      <title>Recs | My Profile</title>
+      <title>My Profile</title>
       <meta
         name="description"
         content="Manga/Manhwa recommendations made easy!"

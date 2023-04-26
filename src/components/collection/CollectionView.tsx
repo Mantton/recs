@@ -49,6 +49,7 @@ export default function CollectionView(props: SerializedCollection) {
     tags,
     manga,
     lastUpdated,
+    adultContent,
   } = props;
   const relativeDate = dateString(dateCreated);
   const link = `/collections/${id}/${slug(title)}`;
@@ -98,7 +99,7 @@ export default function CollectionView(props: SerializedCollection) {
             )}
           </div>
         </div>
-        {tags[0] && <TagList tags={tags} link={link} />}
+        {tags[0] && <TagList tags={tags} link={link} nsfw={adultContent} />}
         {!manga[0] && (
           <p className="flex flex-1 items-center justify-center p-4 text-center text-gray-400">
             No manga in this collection
