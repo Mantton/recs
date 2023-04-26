@@ -9,6 +9,9 @@ export const GetCollectionsSchema = z.object({
   cursor: z.number().positive().nullish(),
 });
 
+export const GetSingleCollectionSchema = z.object({
+  id: z.number().int().nonnegative().optional(),
+});
 export const CreateCollectionSchema = z.object({
   title: z
     .string()

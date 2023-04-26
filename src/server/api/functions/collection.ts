@@ -115,10 +115,15 @@ export const getCollections = async (
         select: {
           favorites: true,
           bookmarks: true,
+          manga: true,
         },
       },
       // Include thee Manga's Title, Thumbnail, ID & Adult Flag
       manga: {
+        take: 8,
+        orderBy: {
+          dateAdded: "desc",
+        },
         include: {
           manga: {
             select: {
@@ -164,6 +169,82 @@ export const getCollections = async (
 
   // Return serialized collection object
   return collections.map((c) => serializeCollection(c, getAuthor(c.authorId)));
+};
+
+export const doesCollectionExist = async (id: number, primsa: PrismaClient) => {
+  const collection = await primsa.collection.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return !!collection;
+};
+export const getCollection = async (
+  id: number,
+  prisma: PrismaClient,
+  accountId?: string
+) => {
+  const collection = await prisma.collection.findUnique({
+    where: {
+      id,
+    },
+    // Include the Favorite & Bookmarks Count
+    include: {
+      _count: {
+        select: {
+          favorites: true,
+          bookmarks: true,
+        },
+      },
+      // Include thee Manga's Title, Thumbnail, ID & Adult Flag
+      manga: {
+        include: {
+          manga: {
+            select: {
+              title: true,
+              thumbnail: true,
+              id: true,
+              isAdult: true,
+            },
+          },
+        },
+      },
+      /**
+       * if an authenticated user is requesting,
+       * fetch the favorites & bookmarks where the ID matches the Authenticated User ID
+       * This will be used to check whether the user has liked or bookmarked this collection
+       */
+      ...(accountId && {
+        favorites: {
+          where: {
+            accountId,
+          },
+        },
+        bookmarks: {
+          where: {
+            accountId,
+          },
+        },
+      }),
+    },
+  });
+
+  if (!collection) return null;
+  // Get authors from clerk
+  const getAuthor = async () => {
+    const [author] = await getUsers([collection.authorId]);
+    if (!author)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "AUTHOR_NOT_FOUND",
+      });
+    return author;
+  };
+  return serializeCollection(collection, await getAuthor());
 };
 
 /**

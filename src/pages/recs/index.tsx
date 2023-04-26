@@ -3,13 +3,12 @@ import Head from "next/head";
 import { api } from "@/utils/api";
 import { LoadingSpinner } from "@/components/loading";
 import type { SerializedCollection } from "@/server/api/utils/serializers";
-import CollectionView, {
-  MediaInfoContext,
-} from "@/components/collection/CollectionView";
 import type { AnilistIDMedia } from "@/types";
 import { getAnilistMediaInfo } from "@/utils/anilist";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import CollectionView from "@/components/collection/CollectionView";
+import { MediaInfoContext } from "@/components/MangaTile";
 
 const BuildGrid = ({ data }: { data: SerializedCollection[] }) => {
   return (

@@ -7,9 +7,12 @@ import {
   CreateCollectionSchema,
   GetCollectionsSchema,
   ToggleStateSchema,
+  GetSingleCollectionSchema,
 } from "../schemas";
 import {
   createCollection,
+  doesCollectionExist,
+  getCollection,
   getCollections,
   toggleBookmark,
   toggleFavorite,
@@ -27,11 +30,25 @@ export const collectionsRouter = createTRPCRouter({
     }),
 
   /**
+   * Checks whether a collection exists with the provided id
+   */
+  doesCollectionExist: publicProcedure
+    .input(GetSingleCollectionSchema)
+    .query(({ ctx, input }) => {
+      if (!input.id) return false;
+      return doesCollectionExist(input.id, ctx.prisma);
+    }),
+
+  /**
    * Get Single Collection Information
    */
-  getCollection: publicProcedure.query(async () => {
-    //
-  }),
+  getCollection: publicProcedure
+    .input(GetSingleCollectionSchema)
+    .query(async ({ ctx, input: { id } }) => {
+      if (!id) return null;
+      const userId = ctx.currentUser;
+      return getCollection(id, ctx.prisma, userId);
+    }),
 
   /**
    * Creates a new Collection

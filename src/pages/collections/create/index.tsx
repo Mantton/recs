@@ -41,7 +41,8 @@ export default function CreateCollectionsPage() {
   const insertMedia = (m: AnilistSearchMedia) => {
     if (selections.length == 50) {
       // TODO: Handle Toast Event
-      console.log("Reached Collection Limit");
+
+      return;
     }
     const isAlreadySaved = !!selections.find((v) => v.id == m.id);
     if (!isAlreadySaved) {
@@ -72,13 +73,11 @@ export default function CreateCollectionsPage() {
             // Manga list guard
             if (!selections[0]) {
               // TODO: Display Error Toast
-              console.log("No Manga Added");
               e.preventDefault();
               return;
             }
             const handler = handleSubmit(
-              (d) => submitNewCollection({ ...d, selections }), // TODO: Make TRPC Mutation Request
-              (e) => console.log(e)
+              (d) => submitNewCollection({ ...d, selections }) // TODO: Make TRPC Mutation Request
             );
             const run = async () => {
               await handler(e);

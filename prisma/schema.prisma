@@ -55,6 +55,7 @@ model CollectionManga {
     collectionId Int
     manga        Manga      @relation(fields: [mangaId], references: [id])
     collection   Collection @relation(fields: [collectionId], references: [id])
+    dateAdded    DateTime   @default(now())
 
     @@unique([mangaId, collectionId])
     @@index([collectionId])
